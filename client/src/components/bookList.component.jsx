@@ -1,26 +1,29 @@
-import React from "react";
-import { gql } from "apollo-boost";
+import React, { useState } from "react";
 import { graphql } from "react-apollo";
-const bookQuery = gql`
-  {
-    books {
-      name
-      id
-    }
-  }
-`;
+import { bookQuery } from "../queries/queries";
+import BookDetails from "./bookDetails.component";
 const BookList = (props) => {
   //   console.log(props);
+  const [bookId, setBookId] = useState(null);
+  const handleClick = (book) => (event) => {
+    const { id } = book;
+    setBookId(id);
+  };
   const books = (data) => {
     return data.loading ? (
       <div>Loading</div>
     ) : (
-      data.books.map((book) => <li key={book.id}>{book.name}</li>)
+      data.books.map((book) => (
+        <li key={book.id} onClick={handleClick(book)}>
+          {book.name}
+        </li>
+      ))
     );
   };
   return (
     <div>
       <ul id="book-list">{books(props.data)}</ul>
+      <BookDetails bookId={bookId} />
     </div>
   );
 };
